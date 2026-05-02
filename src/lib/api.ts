@@ -20,9 +20,7 @@ export async function sendMessage(
     body: JSON.stringify(payload),
   });
 
-  if (!res.ok) {
-    throw new Error(`Request failed: ${res.status}`);
-  }
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
 
   const data = (await res.json()) as { reply?: string };
   if (!data.reply) throw new Error("No reply in response");

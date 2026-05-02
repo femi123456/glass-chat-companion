@@ -1,11 +1,11 @@
 import { useState, type FormEvent, type KeyboardEvent } from "react";
-import { Mic, MicOff, Send, Download } from "lucide-react";
+import { Mic, ArrowUp, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
   onSend: (text: string) => void;
   onExport: () => void;
-  listening: boolean;
+  isListening: boolean;
   onMicToggle: (apply: (text: string) => void) => void;
   recognitionSupported: boolean;
   disabled: boolean;
@@ -14,7 +14,7 @@ interface Props {
 export function InputBar({
   onSend,
   onExport,
-  listening,
+  isListening,
   onMicToggle,
   recognitionSupported,
   disabled,
@@ -36,75 +36,53 @@ export function InputBar({
   };
 
   return (
-    <form
-      onSubmit={submit}
-      className="glass-strong rounded-2xl p-2 flex items-end gap-2"
-    >
-      <button
-        type="button"
-        disabled={!recognitionSupported}
-        onClick={() => onMicToggle((t) => setValue((v) => (v ? `${v} ${t}` : t)))}
-        className={cn(
-          "h-11 w-11 shrink-0 rounded-xl flex items-center justify-center transition",
-          listening
-            ? "bg-primary text-primary-foreground glow-primary"
-            : "glass hover:bg-white/10",
-          !recognitionSupported && "opacity-40 cursor-not-allowed",
-        )}
-        aria-label={listening ? "Stop listening" : "Start voice input"}
-        title={
-          recognitionSupported
-            ? "Voice input"
-            : "Voice input not supported in this browser"
-        }
+    <div className="px-6 md:px-12 pb-6">
+      <form
+        onSubmit={submit}
+        className="max-w-3xl mx-auto glass-panel rounded-[8px] flex items-center gap-1 px-2 py-1.5"
       >
-        {listening ? <Waveform /> : recognitionSupported ? <Mic className="h-5 w-5" /> : <MicOff className="h-5 w-5" />}
-      </button>
+        <button
+          type="button"
+          disabled={!recognitionSupported}
+          onClick={() =>
+            onMicToggle((t) => setValue((v) => (v ? `${v} ${t}` : t)))
+          }
+          className={cn(
+            "h-8 w-8 shrink-0 rounded-[6px] flex items-center justify-center text-white/50 hover:text-white/85 transition disabled:opacity-30 disabled:cursor-not-allowed",
+            isListening && "mic-pulse text-white/85",
+          )}
+          aria-label={isListening ? "Stop listening" : "Start voice input"}
+        >
+          <Mic className="h-4 w-4" />
+        </button>
 
-      <textarea
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={onKey}
-        placeholder={listening ? "Listening…" : "Type a message…"}
-        rows={1}
-        className="flex-1 resize-none bg-transparent outline-none px-2 py-3 text-sm placeholder:text-muted-foreground max-h-40"
-      />
-
-      <button
-        type="button"
-        onClick={onExport}
-        className="h-11 w-11 shrink-0 rounded-xl glass hover:bg-white/10 flex items-center justify-center transition"
-        aria-label="Export chat"
-        title="Export as PDF"
-      >
-        <Download className="h-5 w-5" />
-      </button>
-
-      <button
-        type="submit"
-        disabled={!value.trim() || disabled}
-        className="h-11 w-11 shrink-0 rounded-xl bg-primary text-primary-foreground flex items-center justify-center transition disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 glow-primary"
-        aria-label="Send message"
-      >
-        <Send className="h-5 w-5" />
-      </button>
-    </form>
-  );
-}
-
-function Waveform() {
-  return (
-    <div className="flex items-end gap-0.5 h-5">
-      {[0, 1, 2, 3, 4].map((i) => (
-        <span
-          key={i}
-          className="wave-bar w-0.5 bg-current rounded-full"
-          style={{
-            height: "100%",
-            animationDelay: `${i * 0.1}s`,
-          }}
+        <textarea
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={onKey}
+          placeholder="_ type your message"
+          rows={1}
+          className="flex-1 resize-none bg-transparent outline-none px-2 py-2 text-[13px] text-white/90 placeholder:text-white/30 max-h-40"
         />
-      ))}
+
+        <button
+          type="button"
+          onClick={onExport}
+          className="h-8 w-8 shrink-0 rounded-[6px] flex items-center justify-center text-white/50 hover:text-white/85 transition"
+          aria-label="Export chat as PDF"
+        >
+          <Download className="h-4 w-4" />
+        </button>
+
+        <button
+          type="submit"
+          disabled={!value.trim() || disabled}
+          className="h-8 w-8 shrink-0 rounded-[6px] bg-white/[0.08] hover:bg-white/15 flex items-center justify-center text-white/85 transition disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Send message"
+        >
+          <ArrowUp className="h-4 w-4" />
+        </button>
+      </form>
     </div>
   );
 }

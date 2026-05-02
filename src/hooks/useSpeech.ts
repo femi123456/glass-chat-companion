@@ -11,83 +11,82 @@ type SpeechRecognitionLike = {
   stop: () => void;
 };
 
-function getRecognition(): SpeechRecognitionLike | null {
+function getRecognitionCtor(): any {
   if (typeof window === "undefined") return null;
-  const Ctor =
+  return (
     (window as any).SpeechRecognition ||
-    (window as any).webkitSpeechRecognition;
-  if (!Ctor) return null;
-  return new Ctor();
+    (window as any).webkitSpeechRecognition ||
+    null
+  );
 }
 
 export function useSpeech() {
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
-  const [listening, setListening] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
-  const supportsRecognition =
-    typeof window !== "undefined" &&
-    !!((window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition);
-  const supportsSynthesis =
-    typeof window !== "undefined" && "speechSynthesis" in window;
+  const [supportsRecognition, setSupportsRecognition] = useState(false);
+  const [supportsSynthesis, setSupportsSynthesis] = useState(false);
 
-  const startListening = useCallback(
-    (onResult: (text: string) => void) => {
-      if (!supportsRecognition) return;
-      const rec = getRecognition();
-      if (!rec) return;
-      rec.lang = "en-US";
-      rec.interimResults = false;
-      rec.continuous = false;
-      rec.onresult = (e: any) => {
-        const transcript = Array.from(e.results)
-          .map((r: any) => r[0].transcript)
-          .join(" ");
-        onResult(transcript);
-      };
-      rec.onerror = () => setListening(false);
-      rec.onend = () => setListening(false);
-      recognitionRef.current = rec;
-      setListening(true);
-      rec.start();
-    },
-    [supportsRecognition],
-  );
+  // Defer browser checks to effect to avoid SSR hydration mismatch
+  useEffect(() => {
+    setSupportsRecognition(!!getRecognitionCtor());
+    setSupportsSynthesis("speechSynthesis" in window);
+  }, []);
+
+  const startListening = useCallback((onResult: (text: string) => void) => {
+    const Ctor = getRecognitionCtor();
+    if (!Ctor) return;
+    const rec: SpeechRecognitionLike = new Ctor();
+    rec.lang = "en-US";
+    rec.interimResults = false;
+    rec.continuous = false;
+    rec.onresult = (e: any) => {
+      const transcript = Array.from(e.results)
+        .map((r: any) => r[0].transcript)
+        .join(" ");
+      onResult(transcript);
+    };
+    rec.onerror = () => setIsListening(false);
+    rec.onend = () => setIsListening(false);
+    recognitionRef.current = rec;
+    setIsListening(true);
+    rec.start();
+  }, []);
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
-    setListening(false);
+    setIsListening(false);
   }, []);
 
-  const speak = useCallback(
-    (id: string, text: string) => {
-      if (!supportsSynthesis) return;
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(text);
-      utt.onend = () => setSpeakingId(null);
-      utt.onerror = () => setSpeakingId(null);
-      setSpeakingId(id);
-      window.speechSynthesis.speak(utt);
-    },
-    [supportsSynthesis],
-  );
+  const speak = useCallback((id: string, text: string) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.onend = () => setSpeakingId(null);
+    utt.onerror = () => setSpeakingId(null);
+    setSpeakingId(id);
+    window.speechSynthesis.speak(utt);
+  }, []);
 
   const stopSpeaking = useCallback(() => {
-    if (!supportsSynthesis) return;
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
     setSpeakingId(null);
-  }, [supportsSynthesis]);
+  }, []);
 
   useEffect(() => {
     return () => {
       recognitionRef.current?.stop();
-      if (supportsSynthesis) window.speechSynthesis.cancel();
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
     };
-  }, [supportsSynthesis]);
+  }, []);
 
   return {
-    listening,
+    isListening,
     speakingId,
+    isSpeaking: speakingId !== null,
     startListening,
     stopListening,
     speak,

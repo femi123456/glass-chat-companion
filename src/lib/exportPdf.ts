@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 
 export async function exportElementToPdf(el: HTMLElement, filename: string) {
   const canvas = await html2canvas(el, {
-    backgroundColor: "#1a1530",
+    backgroundColor: "#080809",
     scale: 2,
     useCORS: true,
   });
