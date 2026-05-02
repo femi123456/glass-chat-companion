@@ -2,14 +2,16 @@ import type { Persona } from "@/types";
 
 export function TypingIndicator({ persona }: { persona: Persona }) {
   return (
-    <div className="flex gap-3 animate-message-in">
-      <div className="glass h-9 w-9 rounded-full flex items-center justify-center text-lg shrink-0">
-        {persona.emoji}
+    <div className="flex gap-3 py-4 border-b border-[rgba(255,255,255,0.04)] animate-fade-up">
+      <div className="h-6 w-6 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0 mt-0.5">
+        <span className="text-[10px] tracking-wider text-white/70">
+          {persona.tag}
+        </span>
       </div>
-      <div className="glass rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1.5">
-        <span className="dot-1 h-2 w-2 rounded-full bg-foreground/70" />
-        <span className="dot-2 h-2 w-2 rounded-full bg-foreground/70" />
-        <span className="dot-3 h-2 w-2 rounded-full bg-foreground/70" />
+      <div className="flex items-center gap-1.5 h-6">
+        <span className="h-1 w-1 rounded-full bg-white/40 dot-pulse-1" />
+        <span className="h-1 w-1 rounded-full bg-white/40 dot-pulse-2" />
+        <span className="h-1 w-1 rounded-full bg-white/40 dot-pulse-3" />
       </div>
     </div>
   );

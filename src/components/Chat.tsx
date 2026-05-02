@@ -7,28 +7,31 @@ import { ChatWindow } from "./ChatWindow";
 import { InputBar } from "./InputBar";
 import { useChat } from "@/hooks/useChat";
 import { useSpeech } from "@/hooks/useSpeech";
-import { PERSONAS } from "@/lib/personas";
-import type { Message, Persona } from "@/types";
+import type { Message } from "@/types";
 import { exportElementToPdf } from "@/lib/exportPdf";
 
 export function Chat() {
-  const [persona, setPersona] = useState<Persona>(PERSONAS[0]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { messages, loading, send, clear } = useChat(persona);
+  const {
+    messages,
+    loading,
+    sendMessage,
+    resetChat,
+    activePersona,
+    switchPersona,
+    conversations,
+    activeId,
+    loadConversation,
+  } = useChat();
   const speech = useSpeech();
   const chatRef = useRef<HTMLDivElement>(null);
 
   const handleMicToggle = (apply: (text: string) => void) => {
-    if (speech.listening) {
-      speech.stopListening();
-    } else {
-      speech.startListening(apply);
-    }
+    if (speech.isListening) speech.stopListening();
+    else speech.startListening(apply);
   };
 
-  const handleSpeak = (m: Message) => {
-    speech.speak(m.id, m.content);
-  };
+  const handleSpeak = (m: Message) => speech.speak(m.id, m.content);
 
   const handleExport = async () => {
     if (!chatRef.current || messages.length === 0) {
@@ -37,7 +40,7 @@ export function Chat() {
     }
     try {
       toast.loading("Generating PDF…", { id: "export" });
-      await exportElementToPdf(chatRef.current, `aurora-chat-${Date.now()}.pdf`);
+      await exportElementToPdf(chatRef.current, `chat-${Date.now()}.pdf`);
       toast.success("Chat exported", { id: "export" });
     } catch {
       toast.error("Export failed", { id: "export" });
@@ -47,49 +50,69 @@ export function Chat() {
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       <Background />
-      <div className="relative z-10 h-full flex">
-        <Sidebar
-          active={persona}
-          onSelect={(p) => {
-            setPersona(p);
-            setSidebarOpen(false);
-          }}
-          messages={messages}
-          onNewChat={clear}
-          open={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
 
-        <main className="flex-1 flex flex-col gap-4 p-4 md:p-6 min-w-0">
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        activePersona={activePersona}
+        onSelectPersona={(p) => {
+          switchPersona(p);
+          setSidebarOpen(false);
+        }}
+        conversations={conversations}
+        activeConversationId={activeId}
+        onSelectConversation={(id) => {
+          loadConversation(id);
+          setSidebarOpen(false);
+        }}
+        onNewChat={() => {
+          resetChat();
+          setSidebarOpen(false);
+        }}
+      />
+
+      <main className="relative z-10 h-full flex flex-col">
+        <header className="flex items-center h-12 px-4 border-b border-[rgba(255,255,255,0.05)] glass-panel-flat">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="md:hidden glass rounded-xl h-10 w-10 flex items-center justify-center self-start"
+            className="h-8 w-8 flex items-center justify-center text-white/60 hover:text-white/90 transition"
             aria-label="Open sidebar"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-4 w-4" />
           </button>
+          <div className="ml-3 flex items-baseline gap-2">
+            <span className="text-[10px] tracking-[0.2em] text-white/40">
+              [{activePersona.tag}]
+            </span>
+            <span className="text-[12px] text-white/85">
+              {activePersona.name}
+            </span>
+            <span className="text-[10px] text-white/25 ml-2">
+              · ready_
+            </span>
+          </div>
+        </header>
 
-          <ChatWindow
-            ref={chatRef}
-            messages={messages}
-            persona={persona}
-            loading={loading}
-            speakingId={speech.speakingId}
-            onSpeak={handleSpeak}
-            onStop={speech.stopSpeaking}
-            ttsSupported={speech.supportsSynthesis}
-          />
+        <ChatWindow
+          ref={chatRef}
+          messages={messages}
+          persona={activePersona}
+          loading={loading}
+          speakingId={speech.speakingId}
+          onSpeak={handleSpeak}
+          onStop={speech.stopSpeaking}
+          ttsSupported={speech.supportsSynthesis}
+        />
 
-          <InputBar
-            onSend={send}
-            onExport={handleExport}
-            listening={speech.listening}
-            onMicToggle={handleMicToggle}
-            recognitionSupported={speech.supportsRecognition}
-            disabled={loading}
-          />
-        </main>
-      </div>
+        <InputBar
+          onSend={sendMessage}
+          onExport={handleExport}
+          isListening={speech.isListening}
+          onMicToggle={handleMicToggle}
+          recognitionSupported={speech.supportsRecognition}
+          disabled={loading}
+        />
+      </main>
     </div>
   );
 }

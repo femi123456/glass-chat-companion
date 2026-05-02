@@ -27,45 +27,34 @@ export const ChatWindow = forwardRef<HTMLDivElement, Props>(function ChatWindow(
   }, [messages.length, loading]);
 
   return (
-    <div
-      ref={ref}
-      className="glass-strong rounded-3xl flex-1 overflow-hidden flex flex-col"
-    >
-      <header className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
-        <span className="text-2xl">{persona.emoji}</span>
-        <div>
-          <h2 className="font-semibold leading-tight">{persona.name}</h2>
-          <p className="text-xs text-muted-foreground">
-            Glassmorphic AI · ready when you are
-          </p>
-        </div>
-      </header>
-      <div ref={scrollerRef} className="flex-1 overflow-y-auto px-4 md:px-6 py-6 space-y-4">
-        {messages.length === 0 && !loading && (
-          <div className="h-full flex items-center justify-center">
-            <div className="text-center max-w-sm">
-              <div className="text-5xl mb-3">{persona.emoji}</div>
-              <h3 className="text-lg font-semibold mb-1">
-                Chat with {persona.name}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Switch personas in the sidebar. Type, speak, listen, export.
-              </p>
+    <div ref={ref} className="flex-1 min-h-0 flex flex-col">
+      <div ref={scrollerRef} className="flex-1 overflow-y-auto px-6 md:px-12">
+        <div className="max-w-3xl mx-auto py-6">
+          {messages.length === 0 && !loading && (
+            <div className="h-[60vh] flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-white/25 mb-2">
+                  [{persona.tag}] {persona.name}
+                </p>
+                <p className="text-[13px] text-white/40">
+                  _ start a conversation
+                </p>
+              </div>
             </div>
-          </div>
-        )}
-        {messages.map((m) => (
-          <MessageBubble
-            key={m.id}
-            message={m}
-            persona={persona}
-            speaking={speakingId === m.id}
-            onSpeak={() => onSpeak(m)}
-            onStop={onStop}
-            ttsSupported={ttsSupported}
-          />
-        ))}
-        {loading && <TypingIndicator persona={persona} />}
+          )}
+          {messages.map((m) => (
+            <MessageBubble
+              key={m.id}
+              message={m}
+              persona={persona}
+              speaking={speakingId === m.id}
+              onSpeak={() => onSpeak(m)}
+              onStop={onStop}
+              ttsSupported={ttsSupported}
+            />
+          ))}
+          {loading && <TypingIndicator persona={persona} />}
+        </div>
       </div>
     </div>
   );
