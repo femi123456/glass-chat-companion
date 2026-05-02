@@ -6,11 +6,11 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Aurora Chat — Glassmorphic AI Assistant" },
+      { title: "mono.chat — cinematic AI assistant" },
       {
         name: "description",
         content:
-          "A glassmorphic AI chatbot with persona switching, voice input, text-to-speech, and PDF export.",
+          "A minimalist monospace AI chatbot with persona switching, voice input, text-to-speech, and PDF export.",
       },
     ],
   }),
