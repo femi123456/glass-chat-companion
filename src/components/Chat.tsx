@@ -52,7 +52,7 @@ export function Chat() {
   };
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden font-mono">
+    <div className="relative h-screen w-screen overflow-hidden">
       <Background />
 
       <Sidebar
@@ -73,27 +73,28 @@ export function Chat() {
           resetChat();
           setSidebarOpen(false);
         }}
+        onShowHome={() => {
+          setShowOnboarding(true);
+          setSidebarOpen(false);
+        }}
       />
 
       <main className="relative z-10 h-full flex flex-col">
         {!showOnboarding && (
-          <header className="flex items-center h-12 px-4 border-b border-[rgba(255,255,255,0.05)] glass-panel-flat">
+          <header className="flex items-center h-16 px-6 border-b border-white/10 bg-transparent">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="h-8 w-8 flex items-center justify-center text-white/60 hover:text-white/90 transition"
+              className="h-10 w-10 flex items-center justify-center text-white/60 hover:text-white transition-all"
               aria-label="Open sidebar"
             >
-              <Menu className="h-4 w-4" />
+              <Menu className="h-5 w-5" />
             </button>
-            <div className="ml-3 flex items-baseline gap-2">
-              <span className="text-[10px] tracking-[0.2em] text-white/40">
-                [{activePersona.tag}]
-              </span>
-              <span className="text-[12px] text-white/85">
+            <div className="ml-4 flex items-baseline gap-3">
+              <span className="text-[20px] font-serif text-white tracking-wide">
                 {activePersona.name}
               </span>
-              <span className="text-[10px] text-white/25 ml-2">
-                · ready_
+              <span className="text-[11px] font-medium tracking-widest text-white/40 uppercase">
+                [{activePersona.tag}]
               </span>
             </div>
           </header>

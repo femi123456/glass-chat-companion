@@ -1,7 +1,8 @@
-import { X, Plus, MessageSquare } from "lucide-react";
+import { X, Plus, MessageSquare, Home } from "lucide-react";
 import { PERSONAS } from "@/lib/personas";
 import type { Conversation, Persona } from "@/types";
 import { cn } from "@/lib/utils";
+import { Magnetic } from "./Magnetic";
 
 interface Props {
   open: boolean;
@@ -12,6 +13,7 @@ interface Props {
   activeConversationId: string | null;
   onSelectConversation: (id: string) => void;
   onNewChat: () => void;
+  onShowHome: () => void;
 }
 
 export function Sidebar({
@@ -23,6 +25,7 @@ export function Sidebar({
   activeConversationId,
   onSelectConversation,
   onNewChat,
+  onShowHome,
 }: Props) {
   return (
     <>
@@ -35,31 +38,41 @@ export function Sidebar({
       )}
       <aside
         className={cn(
-          "fixed top-0 left-0 h-[100vh] w-[260px] flex flex-col transition-transform duration-300 ease-in-out z-[100]",
+          "fixed top-0 left-0 h-[100vh] w-[320px] flex flex-col transition-transform duration-500 ease-in-out z-[100] bg-[#151515] border-r border-white/10",
           open ? "translate-x-0" : "-translate-x-full",
         )}
-        style={{
-          background: "rgba(10, 10, 12, 0.95)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderRight: "0.5px solid rgba(255, 255, 255, 0.07)"
-        }}
       >
-        <div className="flex items-center justify-between px-4 h-12 border-b border-[rgba(255,255,255,0.05)]">
-          <span className="text-[12px] font-mono text-white/50">
+        <div className="flex items-center justify-between px-8 h-24 border-b border-white/10">
+          <span className="text-[28px] font-serif text-white tracking-wide">
             femi.ai
           </span>
-          <button
-            onClick={onClose}
-            className="text-white/40 hover:text-white/80 transition"
-            aria-label="Close sidebar"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <Magnetic strength={0.4}>
+              <button
+                onClick={onShowHome}
+                className="text-white/60 hover:text-white transition bg-transparent hover:bg-white/5 p-3 rounded-full inline-block"
+                aria-label="Home"
+              >
+                <Home className="h-5 w-5" strokeWidth={1} />
+              </button>
+            </Magnetic>
+            <Magnetic strength={0.4}>
+              <button
+                onClick={onClose}
+                className="text-white/60 hover:text-white transition bg-transparent hover:bg-white/5 p-3 rounded-full inline-block"
+                aria-label="Close sidebar"
+              >
+                <X className="h-6 w-6" strokeWidth={1} />
+              </button>
+            </Magnetic>
+          </div>
         </div>
 
-        <div className="px-4 py-4">
-          <div className="space-y-1">
+        <div className="px-8 py-8">
+          <p className="text-[10px] font-medium tracking-[0.2em] text-white/40 mb-6 uppercase">
+            Personas
+          </p>
+          <div className="flex flex-col">
             {PERSONAS.map((p) => {
               const active = p.id === activePersona.id;
               return (
@@ -67,37 +80,38 @@ export function Sidebar({
                   key={p.id}
                   onClick={() => onSelectPersona(p)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] text-left transition font-mono",
+                    "w-full flex flex-col items-start py-4 text-left transition-all editorial-panel group",
                     active
-                      ? "bg-white/[0.04] text-white/90"
-                      : "text-white/55 hover:text-white/80 hover:bg-white/[0.02]"
+                      ? "text-white"
+                      : "text-white/50 hover:text-white"
                   )}
-                  style={active ? { border: "0.5px solid rgba(255,255,255,0.15)" } : { border: "0.5px solid transparent" }}
                 >
-                  <span className="text-[10px]" style={{ color: "rgba(255, 255, 255, 0.4)" }}>[{p.tag}]</span>
-                  <span className="text-[12px]">{p.name}</span>
+                  <div className="flex items-baseline justify-between w-full">
+                    <span className={cn("text-[32px] font-display uppercase tracking-wide transition-all", active ? "scale-105 origin-left" : "group-hover:scale-105 origin-left")}>{p.name}</span>
+                    <span className="text-[10px] uppercase tracking-widest text-white/40">[{p.tag}]</span>
+                  </div>
                 </button>
               );
             })}
           </div>
         </div>
 
-        <div className="flex-1 px-4 pb-4 min-h-0 flex flex-col">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[9px] uppercase tracking-[0.2em] font-mono" style={{ color: "rgba(255, 255, 255, 0.3)" }}>
+        <div className="flex-1 px-8 pb-8 min-h-0 flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-[10px] font-medium tracking-[0.2em] text-white/40 uppercase">
               History
             </p>
             <button
               onClick={onNewChat}
-              className="text-white/40 hover:text-white/80 transition"
+              className="text-white/50 hover:text-white p-2 rounded-full transition"
               aria-label="New chat"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-5 w-5" strokeWidth={1} />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto space-y-1 -mx-1 px-1">
+          <div className="flex-1 overflow-y-auto flex flex-col">
             {conversations.length === 0 ? (
-              <p className="text-[11px] px-2 font-mono" style={{ color: "rgba(255, 255, 255, 0.25)" }}>No chats yet</p>
+              <p className="text-[14px] font-light text-white/30 italic">No previous sessions.</p>
             ) : (
               conversations.map((c) => {
                 const active = c.id === activeConversationId;
@@ -106,14 +120,14 @@ export function Sidebar({
                     key={c.id}
                     onClick={() => onSelectConversation(c.id)}
                     className={cn(
-                      "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-[8px] text-left transition font-mono",
+                      "w-full flex items-center gap-3 py-4 text-left transition-all editorial-panel group",
                       active
-                        ? "bg-white/[0.04] text-white/85"
-                        : "text-white/45 hover:text-white/75 hover:bg-white/[0.02]"
+                        ? "text-white"
+                        : "text-white/50 hover:text-white"
                     )}
                   >
-                    <MessageSquare className="h-3 w-3 shrink-0 opacity-50" />
-                    <span className="text-[11px] truncate">{c.title}</span>
+                    <MessageSquare className="h-4 w-4 shrink-0 opacity-50" strokeWidth={1} />
+                    <span className="text-[14px] font-light truncate">{c.title}</span>
                   </button>
                 );
               })

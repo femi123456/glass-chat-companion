@@ -20,45 +20,50 @@ export function MessageBubble({
   ttsSupported,
 }: Props) {
   const isUser = message.role === "user";
-  const initials = isUser ? "YO" : persona.tag;
+  const initials = isUser ? "YOU" : persona.tag;
 
   return (
     <div
       className={cn(
-        "group flex gap-3 py-4 border-b border-[rgba(255,255,255,0.04)] animate-fade-up",
+        "group flex gap-6 py-12 border-b border-white/10 animate-fade-up w-full",
         isUser ? "flex-row-reverse" : "flex-row",
       )}
     >
-      <div className="h-6 w-6 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0 mt-0.5">
-        <span className="text-[10px] tracking-wider text-white/70">
-          {initials}
+      <div className="shrink-0 mt-2">
+        <span className="text-[11px] font-medium tracking-widest text-white/40 uppercase">
+          [{initials}]
         </span>
       </div>
       <div
         className={cn(
-          "flex-1 min-w-0 flex flex-col",
+          "max-w-[85%] flex flex-col",
           isUser ? "items-end" : "items-start",
         )}
       >
         <p
           className={cn(
-            "text-[14px] leading-[1.7] whitespace-pre-wrap break-words",
-            isUser ? "text-right" : "text-left",
+            "whitespace-pre-wrap break-words",
+            isUser 
+              ? "text-[15px] font-sans text-white/90 text-left leading-[1.6] bg-[#2a2a2a] px-5 py-3 rounded-2xl rounded-tr-sm inline-block" 
+              : "text-[16px] md:text-[17px] font-serif text-white/90 leading-[1.7]"
           )}
-          style={{ color: "rgba(255,255,255,0.85)" }}
         >
           {message.content}
         </p>
         {!isUser && ttsSupported && (
           <button
             onClick={speaking ? onStop : onSpeak}
-            className="mt-2 text-white/30 hover:text-white/80 transition opacity-0 group-hover:opacity-100"
+            className="mt-6 flex items-center gap-2 text-white/40 hover:text-white transition-colors text-[12px] font-medium uppercase tracking-widest"
             aria-label={speaking ? "Stop speaking" : "Speak message"}
           >
             {speaking ? (
-              <VolumeX className="h-3.5 w-3.5" />
+              <>
+                <VolumeX className="h-4 w-4" strokeWidth={1} /> Stop
+              </>
             ) : (
-              <Volume2 className="h-3.5 w-3.5" />
+              <>
+                <Volume2 className="h-4 w-4" strokeWidth={1} /> Listen
+              </>
             )}
           </button>
         )}

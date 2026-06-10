@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type KeyboardEvent } from "react";
 import { Mic, ArrowUp, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Magnetic } from "./Magnetic";
 
 interface Props {
   onSend: (text: string) => void;
@@ -39,49 +40,57 @@ export function InputBar({
     <div className="px-6 md:px-12 pb-6">
       <form
         onSubmit={submit}
-        className="max-w-3xl mx-auto glass-panel rounded-[8px] flex items-center gap-1 px-2 py-1.5"
+        className="max-w-3xl mx-auto flex items-center gap-4 px-2"
       >
-        <button
-          type="button"
-          disabled={!recognitionSupported}
-          onClick={() =>
-            onMicToggle((t) => setValue((v) => (v ? `${v} ${t}` : t)))
-          }
-          className={cn(
-            "h-8 w-8 shrink-0 rounded-[6px] flex items-center justify-center text-white/50 hover:text-white/85 transition disabled:opacity-30 disabled:cursor-not-allowed",
-            isListening && "mic-pulse text-white/85",
-          )}
-          aria-label={isListening ? "Stop listening" : "Start voice input"}
-        >
-          <Mic className="h-4 w-4" />
-        </button>
+        <Magnetic strength={0.3}>
+          <button
+            type="button"
+            disabled={!recognitionSupported}
+            onClick={() =>
+              onMicToggle((t) => setValue((v) => (v ? `${v} ${t}` : t)))
+            }
+            className={cn(
+              "h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-white/40 hover:text-white transition disabled:opacity-30 disabled:cursor-not-allowed",
+              isListening && "mic-pulse text-white",
+            )}
+            aria-label={isListening ? "Stop listening" : "Start voice input"}
+          >
+            <Mic className="h-5 w-5" strokeWidth={1} />
+          </button>
+        </Magnetic>
 
-        <textarea
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={onKey}
-          placeholder="_ type your message"
-          rows={1}
-          className="flex-1 resize-none bg-transparent outline-none px-2 py-2 text-[13px] text-white/90 placeholder:text-white/30 max-h-40"
-        />
+        <div className="flex-1 relative border-b border-white/20 focus-within:border-white transition-colors">
+          <textarea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={onKey}
+            placeholder="Write a message..."
+            rows={1}
+            className="w-full resize-none bg-transparent outline-none py-3 text-[16px] font-light text-white placeholder:text-white/30 max-h-40"
+          />
+        </div>
 
-        <button
-          type="button"
-          onClick={onExport}
-          className="h-8 w-8 shrink-0 rounded-[6px] flex items-center justify-center text-white/50 hover:text-white/85 transition"
-          aria-label="Export chat as PDF"
-        >
-          <Download className="h-4 w-4" />
-        </button>
+        <Magnetic strength={0.3}>
+          <button
+            type="button"
+            onClick={onExport}
+            className="h-10 w-10 shrink-0 flex items-center justify-center text-white/40 hover:text-white transition"
+            aria-label="Export chat as PDF"
+          >
+            <Download className="h-5 w-5" strokeWidth={1} />
+          </button>
+        </Magnetic>
 
-        <button
-          type="submit"
-          disabled={!value.trim() || disabled}
-          className="h-8 w-8 shrink-0 rounded-[6px] bg-white/[0.08] hover:bg-white/15 flex items-center justify-center text-white/85 transition disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Send message"
-        >
-          <ArrowUp className="h-4 w-4" />
-        </button>
+        <Magnetic strength={0.5}>
+          <button
+            type="submit"
+            disabled={!value.trim() || disabled}
+            className="h-10 w-10 shrink-0 rounded-full editorial-btn flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
+            aria-label="Send message"
+          >
+            <ArrowUp className="h-5 w-5" strokeWidth={1.5} />
+          </button>
+        </Magnetic>
       </form>
     </div>
   );
