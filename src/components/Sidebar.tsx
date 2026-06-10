@@ -35,13 +35,19 @@ export function Sidebar({
       )}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-[260px] glass-panel flex flex-col transition-transform duration-300",
+          "fixed top-0 left-0 h-[100vh] w-[260px] flex flex-col transition-transform duration-300 ease-in-out z-[100]",
           open ? "translate-x-0" : "-translate-x-full",
         )}
+        style={{
+          background: "rgba(10, 10, 12, 0.95)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderRight: "0.5px solid rgba(255, 255, 255, 0.07)"
+        }}
       >
         <div className="flex items-center justify-between px-4 h-12 border-b border-[rgba(255,255,255,0.05)]">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">
-            mono.chat
+          <span className="text-[12px] font-mono text-white/50">
+            femi.ai
           </span>
           <button
             onClick={onClose}
@@ -53,9 +59,6 @@ export function Sidebar({
         </div>
 
         <div className="px-4 py-4">
-          <p className="text-[9px] uppercase tracking-[0.2em] text-white/30 mb-3">
-            Personas
-          </p>
           <div className="space-y-1">
             {PERSONAS.map((p) => {
               const active = p.id === activePersona.id;
@@ -64,13 +67,14 @@ export function Sidebar({
                   key={p.id}
                   onClick={() => onSelectPersona(p)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] text-left transition",
+                    "w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] text-left transition font-mono",
                     active
-                      ? "bg-white/[0.04] border-[0.5px] border-white/15 text-white/90"
-                      : "border-[0.5px] border-transparent text-white/55 hover:text-white/80 hover:bg-white/[0.02]",
+                      ? "bg-white/[0.04] text-white/90"
+                      : "text-white/55 hover:text-white/80 hover:bg-white/[0.02]"
                   )}
+                  style={active ? { border: "0.5px solid rgba(255,255,255,0.15)" } : { border: "0.5px solid transparent" }}
                 >
-                  <span className="text-[10px] text-white/40">[{p.tag}]</span>
+                  <span className="text-[10px]" style={{ color: "rgba(255, 255, 255, 0.4)" }}>[{p.tag}]</span>
                   <span className="text-[12px]">{p.name}</span>
                 </button>
               );
@@ -80,7 +84,7 @@ export function Sidebar({
 
         <div className="flex-1 px-4 pb-4 min-h-0 flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[9px] uppercase tracking-[0.2em] text-white/30">
+            <p className="text-[9px] uppercase tracking-[0.2em] font-mono" style={{ color: "rgba(255, 255, 255, 0.3)" }}>
               History
             </p>
             <button
@@ -93,7 +97,7 @@ export function Sidebar({
           </div>
           <div className="flex-1 overflow-y-auto space-y-1 -mx-1 px-1">
             {conversations.length === 0 ? (
-              <p className="text-[11px] text-white/25 px-2">No chats yet</p>
+              <p className="text-[11px] px-2 font-mono" style={{ color: "rgba(255, 255, 255, 0.25)" }}>No chats yet</p>
             ) : (
               conversations.map((c) => {
                 const active = c.id === activeConversationId;
@@ -102,10 +106,10 @@ export function Sidebar({
                     key={c.id}
                     onClick={() => onSelectConversation(c.id)}
                     className={cn(
-                      "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-[8px] text-left transition",
+                      "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-[8px] text-left transition font-mono",
                       active
                         ? "bg-white/[0.04] text-white/85"
-                        : "text-white/45 hover:text-white/75 hover:bg-white/[0.02]",
+                        : "text-white/45 hover:text-white/75 hover:bg-white/[0.02]"
                     )}
                   >
                     <MessageSquare className="h-3 w-3 shrink-0 opacity-50" />

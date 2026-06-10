@@ -1,7 +1,6 @@
 import type { Message } from "@/types";
 
-const ENDPOINT =
-  "https://i0mb9p8cf3.execute-api.eu-north-1.amazonaws.com/default/groq-chatbot";
+const ENDPOINT = "https://q5j3ckrjwl7dtncyil2ihkqlpy0ndeao.lambda-url.eu-north-1.on.aws/";
 
 export async function sendMessage(
   messages: Message[],

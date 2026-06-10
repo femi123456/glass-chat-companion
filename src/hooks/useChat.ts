@@ -100,6 +100,19 @@ export function useChat() {
     setActiveId(null);
   }, []);
 
+  const startSessionWithPersona = useCallback((p: Persona) => {
+    setActivePersona(p);
+    setMessages([
+      {
+        id: uid(),
+        role: "assistant",
+        content: p.greeting || "ready_",
+        timestamp: new Date(),
+      },
+    ]);
+    setActiveId(null);
+  }, []);
+
   const loadConversation = useCallback(
     (id: string) => {
       const conv = conversations.find((c) => c.id === id);
@@ -119,6 +132,7 @@ export function useChat() {
     resetChat,
     activePersona,
     switchPersona,
+    startSessionWithPersona,
     conversations,
     activeId,
     loadConversation,

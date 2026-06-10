@@ -10,6 +10,8 @@ export interface Persona {
   tag: string;
   name: string;
   systemPrompt: string;
+  description?: string;
+  greeting?: string;
 }
 
 export interface Conversation {

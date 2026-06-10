@@ -6,7 +6,7 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "mono.chat — cinematic AI assistant" },
+      { title: "femi.ai — cinematic AI assistant" },
       {
         name: "description",
         content:

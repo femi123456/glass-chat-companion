@@ -42,7 +42,7 @@ export function MessageBubble({
       >
         <p
           className={cn(
-            "text-[14px] leading-[1.7] whitespace-pre-wrap break-words max-w-[680px]",
+            "text-[14px] leading-[1.7] whitespace-pre-wrap break-words",
             isUser ? "text-right" : "text-left",
           )}
           style={{ color: "rgba(255,255,255,0.85)" }}
