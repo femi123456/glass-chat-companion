@@ -6,11 +6,12 @@ export async function sendMessage(
   messages: Message[],
   systemPrompt: string,
 ): Promise<string> {
+  const formattedPrompt = `System: ${systemPrompt}\n${messages
+    .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
+    .join("\n")}\nAssistant:`;
+
   const payload = {
-    messages: [
-      { role: "system", content: systemPrompt },
-      ...messages.map((m) => ({ role: m.role, content: m.content })),
-    ],
+    message: formattedPrompt,
   };
 
   const res = await fetch(ENDPOINT, {
